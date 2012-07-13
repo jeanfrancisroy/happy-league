@@ -14,26 +14,34 @@ import hashlib
 config = open('web/config.html').read()
 config_fields = open('web/config_fields.html').read()
 select_schedule = open('web/select_schedule.html').read()
+generate_schedule = open('web/generate_schedule.html').read()
 
 
 class Template:
     
     def __init__(self):
-        self.nMenuItem = 3
         with open("web/template.html") as fd:
             self.content = fd.read()
     
-    def get(self, activeMenuIdx, content ):
-        #formatParam = ['']*self.nMenuItem
-        #formatParam[activeMenuIdx] = 'class="active"'
-        #return self.content%tuple(formatParam+[content])
-    
+    def get(self, content ):
         pages_dict = {
-                      "main_content": content,
-                      "config_fields": config_fields,
-                      "": "",
+                      "[!main_content!]": content,
+                      "[!config_fields!]": config_fields,
+                      "[!config_teams!]": "",
+                      "[!config_restrictions!]": "",
                       }
-        return self.content % pages_dict % pages_dict
+
+        
+        old_content = ""
+        new_content = self.content
+        
+        while (new_content != old_content):
+            old_content = new_content
+            
+            for (key, value) in pages_dict.iteritems():
+                new_content = new_content.replace(key, value)
+            
+        return new_content
         
 template = Template()
 
@@ -48,7 +56,7 @@ class HappyLeagueResource(resource.Resource):
     def render_GET(self, request):
         request.setHeader("content-type", "text/html")
         
-        return template.get(0, select_schedule)
+        return template.get(select_schedule)
     
 
 class TestResource(resource.Resource):
@@ -70,23 +78,37 @@ class ConfigResource(resource.Resource):
     
     def render_GET(self, request):
         request.setHeader("content-type", "text/html")
-        return template.get(1, config)
+        return template.get(config)
+    
     
 class SelectScheduleResource(resource.Resource):
     isLeaf = True
     
     def render_GET(self, request):
         request.setHeader("content-type", "text/html")
-        return template.get(0, select_schedule)
+        return template.get(select_schedule)
+    
+    
+class GenerateScheduleResource(resource.Resource):
+    isLeaf = True
+    
+    def render_GET(self, request):
+        request.setHeader("content-type", "text/html")
+        return template.get(generate_schedule)
     
 
 root = HappyLeagueResource()
+
+# Static childs
 root.putChild("bootstrap", static.File("web/bootstrap"))
 root.putChild("slick", static.File("web/slick"))
 root.putChild("js", static.File("web/js/"))
+
+# Dynamic childs
 root.putChild("test", TestResource())
-root.putChild("config", ConfigResource())
 root.putChild("selectSchedule", SelectScheduleResource())
+root.putChild("config", ConfigResource())
+root.putChild("generateSchedule", GenerateScheduleResource())
 
 reactor.listenTCP(8080, server.Site(root))
 reactor.run()

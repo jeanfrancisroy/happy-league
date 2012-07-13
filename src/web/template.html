@@ -42,9 +42,9 @@
           <a class="brand" href="selectSchedule">Happy League</a>
           <div class="nav-collapse">
             <ul class="nav">
-              <li><a href="selectSchedule">Select Schedule</a></li>
-              <li><a href="config">Config</a></li>
-              <li><a href="#contact">Generate Schedule</a></li>
+              <li id="li_selectSchedule"><a href="selectSchedule">Select Schedule</a></li>
+              <li id="li_config"><a href="config">Config</a></li>
+              <li id="li_generateSchedule"><a href="generateSchedule">Generate Schedule</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -54,7 +54,7 @@
     <div class="container-fluid">
       <div class="row-fluid">
 
-        %(main_content)s
+        [!main_content!]
       </div>
 
       <hr>
