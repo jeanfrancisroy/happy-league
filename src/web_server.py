@@ -72,11 +72,12 @@ class Config(resource.Resource):
     
     def render_GET(self, request):
         request.setHeader("content-type", "text/html")
-        return template.get(1,config)
+        return template.get(1,open('web/config.html').read())
     
 
 root = HappyLeagueResource()
 root.putChild("bootstrap", static.File("web/bootstrap"))
+root.putChild("slick", static.File("web/slick"))
 root.putChild("js", static.File("web/js/"))
 root.putChild("test", TestResource())
 root.putChild("config",Config())
