@@ -7,6 +7,8 @@ Created on 2012-07-13
 
 from twisted.web import server, resource, static
 from twisted.internet import reactor
+import json
+import math
 
 hello = """
 <div class="span9">
@@ -56,6 +58,10 @@ class TestResource(resource.Resource):
         request.setHeader("content-type", "text/html")
         return "Test réussi!"
     
+    def render_POST(self, request):
+        request.setHeader("content-type", "application/json")
+        test_dict = {"text": "Allo", "chiffre": math.pi}
+        return json.dumps(test_dict)
 
 class Config(resource.Resource):
     isLeaf = True
@@ -68,6 +74,7 @@ class Config(resource.Resource):
 
 root = HappyLeagueResource()
 root.putChild("bootstrap", static.File("web/bootstrap"))
+root.putChild("js", static.File("web/js/"))
 root.putChild("test", TestResource())
 root.putChild("config",Config())
 root.putChild("selectSchedule",HappyLeagueResource())
