@@ -20,6 +20,23 @@ hello = """
    <div id="div_result"></div>
  </div>
  
+<ul class="nav nav-tabs nav-stacked nav-pills" id="myTab">
+  <li class="active"><a href="#home">Home</a></li>
+  <li><a href="#profile">Profile</a></li>
+  <li><a href="#messages">Messages</a></li>
+  <li><a href="#settings">Settings</a></li>
+</ul>
+ 
+<div class="tab-content">
+  <div class="tab-pane active" id="home">...</div>
+  <div class="tab-pane" id="profile">...2</div>
+  <div class="tab-pane" id="messages">...3</div>
+  <div class="tab-pane" id="settings">...4</div>
+</div>
+ 
+<script>
+
+</script>
 
 </div><!--/span-->
 """
