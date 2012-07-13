@@ -83,14 +83,14 @@ class TestResource(resource.Resource):
         return_dict = {"greeting": "Hello, ", "name": name, "hash": ", " + hashlib.md5(name).hexdigest()}
         return json.dumps(return_dict)
 
+config=open('web/config.html').read()
 class Config(resource.Resource):
     isLeaf = True
     
     def render_GET(self, request):
         request.setHeader("content-type", "text/html")
-        return template.get(1,'config')
+        return template.get(1,config)
     
-
 
 root = HappyLeagueResource()
 root.putChild("bootstrap", static.File("web/bootstrap"))
