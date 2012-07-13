@@ -33,7 +33,7 @@ class Template:
                       "config_fields": config_fields,
                       "": "",
                       }
-        return self.content % pages_dict
+        return self.content % pages_dict % pages_dict
         
 template = Template()
 
