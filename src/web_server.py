@@ -10,6 +10,12 @@ from twisted.internet import reactor
 import json
 import hashlib
 
+# Preload html files
+config = open('web/config.html').read()
+config_fields = open('web/config_fields.html').read()
+select_schedule = open('web/select_schedule.html').read()
+
+
 class Template:
     
     def __init__(self):
@@ -18,13 +24,18 @@ class Template:
             self.content = fd.read()
     
     def get(self, activeMenuIdx, content ):
-        formatParam = ['']*self.nMenuItem
-        formatParam[activeMenuIdx] = 'class="active"'
-        return self.content%tuple(formatParam+[content])
+        #formatParam = ['']*self.nMenuItem
+        #formatParam[activeMenuIdx] = 'class="active"'
+        #return self.content%tuple(formatParam+[content])
+    
+        pages_dict = {
+                      "main_content": content,
+                      "config_fields": config_fields,
+                      "": "",
+                      }
+        return self.content % pages_dict
         
 template = Template()
-config = open('web/config.html').read()
-select_schedule = open('web/select_schedule.html').read()
 
 class HappyLeagueResource(resource.Resource):
     isLeaf = False
@@ -71,6 +82,7 @@ class SelectScheduleResource(resource.Resource):
 
 root = HappyLeagueResource()
 root.putChild("bootstrap", static.File("web/bootstrap"))
+root.putChild("slick", static.File("web/slick"))
 root.putChild("js", static.File("web/js/"))
 root.putChild("test", TestResource())
 root.putChild("config", ConfigResource())

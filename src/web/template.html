@@ -9,6 +9,8 @@
 
     <!-- Le styles -->
     <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" href="slick/slick.grid.css" type="text/css"/>
+    <link rel="stylesheet" href="slick/css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css"/>
     <style type="text/css">
       body {
         padding-top: 60px;
@@ -40,9 +42,9 @@
           <a class="brand" href="selectSchedule">Happy League</a>
           <div class="nav-collapse">
             <ul class="nav">
-              <li %s><a href="selectSchedule">Select Schedule</a></li>
-              <li %s><a href="config">Config</a></li>
-              <li %s><a href="#contact">Generate Schedule</a></li>
+              <li><a href="selectSchedule">Select Schedule</a></li>
+              <li><a href="config">Config</a></li>
+              <li><a href="#contact">Generate Schedule</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -52,7 +54,7 @@
     <div class="container-fluid">
       <div class="row-fluid">
 
-        %s
+        %(main_content)s
       </div>
 
       <hr>

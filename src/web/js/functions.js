@@ -9,11 +9,11 @@ function test_function(name){
 	return false ;
 };
 
-$('#myTab a').click(function (e) {
+$('#tab_config a').click(function (e) {
     e.preventDefault();
     $(this).tab('show');
   })
 
   $(function () {
-    $('#myTab a:last').tab('show');
+    $('#tab_config a:first').tab('show');
   })
