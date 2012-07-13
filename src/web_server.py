@@ -8,14 +8,16 @@ Created on 2012-07-13
 from twisted.web import server, resource, static
 from twisted.internet import reactor
 import json
-import math
+import hashlib
 
 hello = """
 <div class="span9">
  <div class="hero-unit">
    <h1>Hello, world!</h1>
-   <p>This is a template for a simple marketing or informational website. It includes a large callout called the hero unit and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-   <p><a class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+   <p>Enter your name:</p>
+   <input id="txt_name" type="text" value="Test!" />
+   <p><a class="btn btn-primary btn-large" onclick="test_function($(txt_name).val())">Learn more &raquo;</a></p>
+   <div id="div_result"></div>
  </div>
  
 
@@ -60,8 +62,9 @@ class TestResource(resource.Resource):
     
     def render_POST(self, request):
         request.setHeader("content-type", "application/json")
-        test_dict = {"text": "Allo", "chiffre": math.pi}
-        return json.dumps(test_dict)
+        name = request.args["name"][0]
+        return_dict = {"greeting": "Hello, ", "name": name, "hash": ", " + hashlib.md5(name).hexdigest()}
+        return json.dumps(return_dict)
 
 class Config(resource.Resource):
     isLeaf = True
