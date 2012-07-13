@@ -10,10 +10,16 @@ function test_function(name){
 };
 
 $('#tab_config a').click(function (e) {
-    e.preventDefault();
-    $(this).tab('show');
-  })
+	e.preventDefault();
+	$(this).tab('show');
+})
 
-  $(function () {
-    $('#tab_config a:first').tab('show');
-  })
+$(function () {
+	// On the config page, show the first tab.
+	$('#tab_config a:first').tab('show');
+})
+
+$(document).ready(function() {
+    var pathname = window.location.pathname.substring(1);
+    $("#li_" + pathname).addClass("active");
+});
