@@ -1,7 +1,7 @@
-#Fri Jul 13 17:14:54 EDT 2012
+#Sat Jul 14 09:37:08 EDT 2012
 eclipse.preferences.version=1
-encoding//src/config.py=utf-8
 encoding//src/htmlSchedule.py=utf-8
+encoding//src/qt/main.py=utf-8
 encoding//src/web_server.py=utf-8
 encoding//src/xlsConfig.py=utf-8
 encoding/xlsConfig.py=utf-8
