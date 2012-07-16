@@ -34,7 +34,6 @@ def populateTable(table, wDayStart, nDay):
             wDay = 0
             wCount += 1
             
-        QTableWidgetItem()
 
 
 def func(row, col, *argL):
