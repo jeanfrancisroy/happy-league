@@ -36,6 +36,7 @@ def anneal( obj, v2p, vMin = -np.inf, callback = None):
         
         v = obj.value() # current value
         vBest = v # best value
+        obj.flagBest()
         
         while True:
             

@@ -1,18 +1,22 @@
-#-*- coding: utf-8 -*-
-'''
+# -*- coding: utf-8 -*-
+"""
 Created on Jan 11, 2011
 
 @author: alex
-'''
 
-import xlrd 
+"""
+from future.utils import iteritems
+import xlrd
 import datetime
 import itertools
-#from schedule import genBasicSchedule, fieldByDate
-#import schAnneal
-#import cPickle
-from model import  Field, Restriction,Date,ObjSrv, Team, Division, League, Config, DivisionHalf
-from util import parseTime, unparseTime
+from model import Field, Restriction, Date, ObjSrv, Team, Division, League, Config, DivisionHalf
+from util import parseTime
+
+# Python 3 compatibility
+import sys
+if sys.version_info > (3, 0):
+    unicode = str
+
 
 TEAM = 'equipe'
 STADIUM = 'stade'
@@ -22,53 +26,54 @@ TIME_MIN = 'heure min'
 DATE = 'date'
 FNAME = 'terrain'
 
-typeL = (TEAM,STADIUM,TIME,FNAME,STADIUM,DATE)
+typeL = (TEAM, STADIUM, TIME, FNAME, STADIUM, DATE)
 
 confKeyMap = {
-    u'Durée des match':'matchDuration',
-    u'Nombre de match':'nbMatch',
+    u'Durée des match': 'matchDuration',
+    u'Nombre de match': 'nbMatch',
     u'Pénalité match double': 'penDateFactor'}
 
 RESTR = u'contraintes'
 TEAM_GROUP = u'multi-équipe'
-CONF_SHEET= u'Général'
+CONF_SHEET = u'Général'
 LEAGUE = u'Équipes'
 UNIF = u'uniformité'
 
-signD = {'inclusion':True,'exclusion':False}
+signD = {'inclusion': True, 'exclusion': False}
 
 
-def isGroupName( name ):
-    if not isinstance( name, (str,unicode)): return False
+def isGroupName(name):
+    if not isinstance(name, (str, unicode)): return False
     name = name.strip()
-    if len(name) <= 2 : return False
+    if len(name) <= 2: return False
     return name[0] == '<' and  name[-1] == '>'
 
-def identity( val) : return val
 
-class ConfigException(Exception):pass
+def identity(val): return val
+
+
+class ConfigException(Exception):
+    pass
+
 
 class ConfigLoader:
-    
-    def __init__(self, fileName ):
-        
-#        self.matchDuration = 60+30
-        
+    def __init__(self, fileName):
+
         self.parserD = {
-            DATE:self.parseDate,
-            TIME:parseTime,
-            FNAME:identity,
-            STADIUM:identity,
-            'action':identity,
-            TIME_MAX:parseTime,
-            TIME_MIN:parseTime,
-            TEAM:self.parseTeam,
+            DATE: self.parseDate,
+            TIME: parseTime,
+            FNAME: identity,
+            STADIUM: identity,
+            'action': identity,
+            TIME_MAX: parseTime,
+            TIME_MIN: parseTime,
+            TEAM: self.parseTeam,
             }
-        
+
         self.dateSrv = ObjSrv()
-        
+
         self.wb = xlrd.open_workbook(fileName)
-        
+
         self.loadGeneralConf()
         self.parseLeague()
         self.getGroups()
@@ -76,28 +81,30 @@ class ConfigLoader:
         self.getRestriction()
         self.getTeamGrpD()
         self.parseUniformity()
-        
 
-    def parseDate( self, date ):
-        if isinstance( date, datetime.date ):
-            d = Date( date.year, date.month, date.day)
+    def parseDate(self, date):
+        if isinstance(date, datetime.date):
+            d = Date(date.year, date.month, date.day)
         else:
-            month, day, year = date.split('/',2)
-            d = Date( int(year), int(month), int(day) )
+            month, day, year = date.split('/', 2)
+            d = Date(int(year), int(month), int(day))
         return self.dateSrv[d]
 
-    def parseTeam( self, teamName ):
-        if isinstance( teamName, Team ):  team = teamName
-        else:                             team = Team( teamName )
-        return self.teamSrv[ team ]
+    def parseTeam(self, teamName):
+        if isinstance(teamName, Team):
+            team = teamName
+        else:
+            team = Team(teamName)
 
-    def loadLeague(self, league ):
+        return self.teamSrv[team]
+
+    def loadLeague(self, league):
         self.divSrv = ObjSrv()
         self.teamSet = set()
         for division in league.divisionL:
             division = self.divSrv[division]
             for team in division.teamL:
-                self.teamSet.add( team )
+                self.teamSet.add(team)
 
     def xl2py(self, val, fmt, strip=False ):
         if fmt == xlrd.XL_CELL_DATE:
@@ -107,7 +114,7 @@ class ConfigLoader:
             elif dateTuple[:3] == (0,0,0):
                 return datetime.time( *dateTuple[3:] )
             else:
-                return datetime.datetime( *dateTuple  ) 
+                return datetime.datetime( *dateTuple  )
         elif fmt == xlrd.XL_CELL_NUMBER:
             return val
         elif fmt == xlrd.XL_CELL_TEXT:
@@ -125,38 +132,38 @@ class ConfigLoader:
         return valL
 
     def getGroups( self ):
-    
+
         sh = self.wb.sheet_by_name(u'groupes')
         groupD = {}
-        
+
         for division in self.divSrv.objD.values():
             groupD[ '<%s>'%division.name ] = (TEAM,division.teamL)
-        
+
         for i in range(1,sh.nrows):
             valL = self.getRow( sh, i, True )
             type_ = valL[0]
             name = valL[1]
-            
+
             if type_ not in typeL:
                 raise ConfigException("%s n'est pas un type valide. Les valeurs possibles sont : %s."%(type_, ', '.join(typeL)) )
             if not isGroupName(name):
                 raise ConfigException("Un nom de groupe doit commencer par '<' et terminer par '>', ce qui n'est pas le cas de :%s"%name)
-            
+
             itemL = []
             for val in valL[2:]:
                 if val is not None: itemL.append( val )
-            
+
             groupD[name] = (type_,itemL)
 
-    
+
         self.groupD = groupD
-    
+
     def expand( self, field, type_ ):
         if field is None: return None
-        if not isinstance( field, (str,unicode)): 
+        if not isinstance(field, (str, unicode)):
             valL = [field]
         else:
-            if isGroupName( field ) and self.groupD.has_key(field):
+            if isGroupName( field ) and field in self.groupD:
                 (type__, valL ) = self.groupD[ field ]
                 if type__ != type_:
                     raise Exception("Vous avez utilisé un groupe de type %s dans un champ de type %s"%(type__,type_) )
@@ -164,9 +171,8 @@ class ConfigLoader:
                 valL = [ val.strip() for val in field.split( ',' ) ]
             else:
                 valL = [field]
-        
-        return [ self.parserD[type_]( val ) for val in valL ]
 
+        return [ self.parserD[type_]( val ) for val in valL ]
 
     def expandAll( self, valL, type2idx, typeL ):
         valLL = []
@@ -177,25 +183,25 @@ class ConfigLoader:
 
     def getRestriction(self):
         sh = self.wb.sheet_by_name(RESTR)
-        
+
         typeL, type2idx = self.getType( sh )
 
         restrD = {}
-        
+
         self.teamSrv.lock = True
         self.dateSrv.lock = True
-        
+
         for i in range(1,sh.nrows):
             valL = self.getRow( sh, i, True )
             include = signD[ str(valL[0]).strip() ]
             value = valL[1]
-            
+
             teamL, dateL = self.expandAll( valL,type2idx,(TEAM,DATE) )
             timeMinL, timeMaxL, stadiumL, fNameL = self.expandAll( valL,type2idx,(TIME_MIN,TIME_MAX,STADIUM,FNAME) )
-            
-            
-            
-            if dateL is None: 
+
+
+
+            if dateL is None:
                 dateL = self.dateSrv.objD.values()
 
             for team in teamL:
@@ -207,9 +213,9 @@ class ConfigLoader:
                     if fNameL   is not None: restr.fNameS   = set( fNameL )
                     try:                restrD[ (team,date) ].append( restr )
                     except KeyError :   restrD[ (team,date) ] = [restr]
-                    
-            
-            
+
+
+
         self.restrD = restrD
 
     def getType(self, sh ):
@@ -217,41 +223,34 @@ class ConfigLoader:
         typeL = [ str(type_) for type_ in typeL ]
         type2idx = dict(  zip( typeL, range(len(typeL)) )  )
 
-#        typeL = [ type.split()[0] for type in typeL ] # only the first word is the type
         return typeL, type2idx
-            
 
-    def getFieldL( self ):
+    def getFieldL(self):
         sh = self.wb.sheet_by_name(u'terrains')
-        
-        typeL, _type2idx = self.getType( sh )
-        
-        fieldSet= set()
-        for i in range(1,sh.nrows):
-            valL = self.getRow( sh, i, True )
-            action = str(valL[0]).strip()        
-            fieldPropLL = [self.expand( val,type_ ) for val, type_ in zip(valL[1:],typeL[1:]) ]
-           
-            subSet = set([ fieldProp for fieldProp in itertools.product( *fieldPropLL ) ])
-            
+        typeL, _type2idx = self.getType(sh)
+
+        fieldSet = set()
+        for i in range(1, sh.nrows):
+            valL = self.getRow(sh, i, True)
+            action = str(valL[0]).strip()
+            fieldPropLL = [self.expand(val, type_) for val, type_ in zip(valL[1:], typeL[1:])]
+            subSet = set([fieldProp for fieldProp in itertools.product(*fieldPropLL)])
+
             if action == '+':
-                fieldSet.update( subSet )
+                fieldSet.update(subSet)
             elif action == '-':
-                fieldSet.difference_update( subSet )
-        
+                fieldSet.difference_update(subSet)
+
         fieldL = list(fieldSet)
         fieldL.sort()
-        
-        dateL = list(set(zip( *fieldL )[1]))
+
+        dateL = list(set(list(zip( *fieldL))[1]))
         dateL.sort()
-#        self.dateL = dateL
-        
+
         self.fieldL = []
         for stadium, date, time, fName in fieldL:
-#            date = self.dateSrv[Date(*date)]
             self.fieldL.append( Field( stadium, fName, time, date, self.matchDuration ) )
-            
-    
+
     def getTeamGrpD(self):
         sh = self.wb.sheet_by_name(TEAM_GROUP)
         teamGrpD = {}
@@ -266,22 +265,18 @@ class ConfigLoader:
                     if team in self.teamSet:
                         teamL.append( team )
                     else:
-                        print 'Unknown team : %s'%str(team)
-            
-            teamGrpD[name] = (pen,teamL)
+                        print('Unknown team : %s' % str(team))
 
-#        for key, val in teamGrpD.iteritems():
-#            pen, teamL = val
-#            print key, pen, ', '.join([ str(team) for team in teamL ])
+            teamGrpD[name] = (pen, teamL)
+
         self.teamGrpD = teamGrpD
-        
+
     def parseLeague(self):
         sh = self.wb.sheet_by_name(LEAGUE)
         self.teamSrv = ObjSrv()
-#        self.divSrv = ObjSrv()
         header = self.getRow( sh, 0, True )
         unifGrpIdL = header[3:]
-        print unifGrpIdL
+        print(unifGrpIdL)
         divD = {}
         for i in range(1,sh.nrows):
             valL = self.getRow( sh, i, True )
@@ -289,18 +284,19 @@ class ConfigLoader:
                 div = int(valL[0])
             except ValueError:
                 div = str(valL[0])
-                
+
             pool = valL[1]
-            team = self.parseTeam(valL[2]) 
+            team = self.parseTeam(valL[2])
             team.rank = i
             countL = [ int(e) for e in valL[3:] ]
-            team.unifCountD = dict( zip(unifGrpIdL, countL )) 
-            if not divD.has_key( div ): divD[ div ] = []
+            team.unifCountD = dict( zip(unifGrpIdL, countL ))
+            if div not in divD:
+                divD[ div ] = []
             divD[div].append( (pool, team ) )
-        
-        
+
+
         divL = []
-        for divId, valL in divD.iteritems():
+        for divId, valL in iteritems(divD):
             poolL, teamL = zip( *valL )
             poolS = set(poolL)
             if len(poolS) == 1:
@@ -312,13 +308,11 @@ class ConfigLoader:
                 division = DivisionHalf('division-%s'%str(divId), teamL1, teamL2)
             else:
                 raise Exception("Can't have more than two pools in the same division (%s)."%(', '.join(map(str,poolS))) )
-            
-#            print division
-            
+
             for team in teamL :
                 team.division = division
             divL.append( division )
-        
+
         self.league = League( divL )
         self.loadLeague( self.league )
 
@@ -327,75 +321,42 @@ class ConfigLoader:
         unifL = []
         for i in range(1,sh.nrows):
             restr = Restriction(False, 1, None, None)
-            key, pen, maxCount, timeMin, timeMax, stadium, field = self.getRow( sh, i, True )
-            if stadium is not None : restr.stadiumS = set([stadium]) 
+            key, pen, maxCount, timeMin, timeMax, stadium, field = self.getRow(sh, i, True)
+            if stadium is not None : restr.stadiumS = set([stadium])
             if field is not None : restr.fNameS = set([field])
             restr.timeMin = parseTime(timeMin)
             restr.timeMax = parseTime(timeMax)
             unifL.append( (key, float(pen) / 2**maxCount, restr) )
 
-        keySet = set(zip( *unifL )[0])
+        keySet = set(list(zip( *unifL))[0])
         for team in self.league.getTeamL():
             if hasattr( team, 'unifCountD'):
                 for id_ in team.unifCountD.keys():
                     if id_ not in keySet:
-                        print "Warning : %s not in [%s]"%( id_, unicode( u', '.join( list(keySet)) )) 
-                    
+                        print("Warning : %s not in [%s]" % (id_, ', '.join(list(keySet))))
+
         self.unifL = unifL
-#        print self.unifL
-            
-    
+
     def loadGeneralConf(self):
         sh = self.wb.sheet_by_name(CONF_SHEET)
         confD = {}
         for i in range(sh.nrows):
             key, val = self.getRow( sh, i, True )
             confD[ confKeyMap[key] ] = val
-            
-        
+
         self.matchDuration = parseTime( confD['matchDuration'] )
         self.nbMatch = int( confD['nbMatch'] )
         self.penDateFactor = confD['penDateFactor']
-            
+
     def getConfig(self):
-        config = Config(self.league, self.fieldL, self.restrD, self.teamGrpD, self.unifL, 
+        config = Config(self.league, self.fieldL, self.restrD, self.teamGrpD, self.unifL,
              self.matchDuration, self.nbMatch, self.penDateFactor)
         return config
-    
-#def testBasicSchedule():
-#    f = open("leagues.pkl")
-#    leagueL = cPickle.load(f)
-#    league = leagueL[1]
-#    config = Config('config.xls',league)
-#    fieldLL, dateL = schedule.fieldByDate(config.fieldL) 
-#    sch = schedule.genBasicSchedule(league.divisionL, fieldLL)
-#    
-#    for date, matchL in zip( dateL, sch ):
-#        print date
-#        for match in matchL:
-#            print match
-#        print
-#    
-#    for restrL in config.restrD.itervalues():
-#        for restr in restrL:
-#            print restr
-#        
-    
-    
-#
+
+
 def testParse():
-    
-    config = ConfigLoader('/home/alexandre/xlsConfig.xls').getConfig()
-    
-#    fieldLL, dateL = schedule.fieldByDate(config.fieldL) 
-    
-#    for date, fieldL in zip(dateL, fieldLL ):
-#        print date
-#        for field in fieldL:
-#            print field
-#        print
+    config = ConfigLoader('example_configs/xlsConfig.xls').getConfig()
+    print(config.fieldL)
 
 if __name__ == "__main__":
-#    testBasicSchedule()
     testParse()
-    
