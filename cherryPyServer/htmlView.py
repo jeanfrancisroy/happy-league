@@ -112,6 +112,8 @@ class HtmlSchedule:
                 if field.date is not date:
                     continue
                 time = '%d:%02d' % unparseTime(field.time)
+                if field.stadium not in d:
+                    d[field.stadium] = {}
                 d[field.stadium][(time, field.name)] = """<font color="gray" >AVAILABLE</font>"""
 
             for stadium, table in iteritems(d):
