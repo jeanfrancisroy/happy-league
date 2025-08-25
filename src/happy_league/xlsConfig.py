@@ -5,7 +5,6 @@ Created on Jan 11, 2011
 @author: alex
 
 """
-from future.utils import iteritems
 import xlrd
 import datetime
 import itertools
@@ -296,7 +295,7 @@ class ConfigLoader:
 
 
         divL = []
-        for divId, valL in iteritems(divD):
+        for divId, valL in divD.items():
             poolL, teamL = zip( *valL )
             poolS = set(poolL)
             if len(poolS) == 1:

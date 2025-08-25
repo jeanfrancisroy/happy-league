@@ -4,7 +4,6 @@ Created on 2011-11-02
 
 @author: alexandre
 '''
-from future.utils import iteritems
 import numpy as np
 from copy import deepcopy
 
@@ -116,7 +115,7 @@ class HtmlSchedule:
                     d[field.stadium] = {}
                 d[field.stadium][(time, field.name)] = """<font color="gray" >AVAILABLE</font>"""
 
-            for stadium, table in iteritems(d):
+            for stadium, table in d.items():
                 objL.append(HtmlTag('h3', stadium))
                 colL = TableMap(table).toStrMat()
                 objL.append(HtmlTable(list(zip(*colL)), [{'align': 'center'}]*len(colL), border="1", cellpadding="3", cellspacing="0", **{'class': 'table table-bordered'}))

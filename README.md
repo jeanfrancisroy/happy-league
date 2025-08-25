@@ -86,7 +86,7 @@ Le générateur peut être empaqueté en une application locale (Windows, MacOS,
 ```
 cd /path/to/happy-league
 poetry install
-poetry run briefcase create macOS   # or windows
-poetry run briefcase build macOS
-poetry run briefcase package macOS
+poetry run briefcase create windows
+poetry run briefcase build windows
+poetry run briefcase package windows
 ```

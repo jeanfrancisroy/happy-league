@@ -3,11 +3,13 @@ Created on 2011-11-03
 
 @author: alexandre
 """
-import cherrypy
-from os import path
 import subprocess as sp
 import os
+from os import path
 import tempfile
+import sys
+
+import cherrypy
 
 from happy_league.cherryPyServer import htmlView
 from happy_league.util import read_pickle
@@ -114,9 +116,9 @@ class ScheduleServer(object):
                 fd.write(data)
 
         print('file Saved')
-        print(' '.join([makeSchedulePath, self.workFolder, minutes]))
+        print(' '.join([sys.executable, makeSchedulePath, self.workFolder, minutes]))
 
-        self.subProcess = sp.Popen([makeSchedulePath, self.workFolder, minutes], stdout=open(path.join(self.workFolder, 'stdout'), 'w'))
+        self.subProcess = sp.Popen([sys.executable, makeSchedulePath, self.workFolder, minutes], stdout=open(path.join(self.workFolder, 'stdout'), 'w'))
         print('process started')
         started = "<h2>Stared for {} minutes...</h2>".format(minutes)
         return html_page(started)

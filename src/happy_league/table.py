@@ -3,7 +3,6 @@ Created on Oct 7, 2010
 
 @author: alex
 '''
-from future.utils import iteritems
 import numpy as np
 
 emptyD = {}
@@ -28,7 +27,7 @@ class TableMap:
 
         self.mat = np.zeros((len(rowL), len(colL)), object)
         self.mat[:, :] = None
-        for key, val in iteritems(tableD):
+        for key, val in tableD.items():
             try:
                 self.mat[self.row2idx[key[0]], self.col2idx[key[1]]] = val
             except KeyError:
@@ -45,18 +44,18 @@ class TableMap:
     def delCol(self, key):
         idx = self.col2idx.pop(key)
         self.mat = np.delete(self.mat, idx, 1)
-        for key, idx_ in iteritems(self.col2idx):
+        for key, idx_ in self.col2idx.items():
             if idx_ > idx:
                 self.col2idx[key] -= 1
 
     def insertCol(self, colName, colD, beforeKey):
         idx = self.col2idx[beforeKey]
-        for key, idx_ in iteritems(self.col2idx):
+        for key, idx_ in self.col2idx.items():
             if idx_ >= idx:
                 self.col2idx[key] += 1
         self.col2idx[colName] = idx
         self.mat = np.insert(self.mat, idx, None, 1)
-        for key, val in iteritems(colD):
+        for key, val in colD.items():
             rowIdx = self.row2idx[key]
             self.mat[rowIdx, idx] = val
 
@@ -71,11 +70,11 @@ class TableMap:
         self.row2idx = tmp
 
     def iterCols(self):
-        for key, idx in iteritems(self.col2idx):
+        for key, idx in self.col2idx.items():
             yield key, self.mat[:, idx]
 
     def iterRows(self):
-        for key, idx in iteritems(self.row2idx):
+        for key, idx in self.row2idx.items():
             yield key, self.mat[idx, :]
 
     def colKeys(self):
@@ -85,7 +84,7 @@ class TableMap:
         return self._sortedKeys(self.row2idx)
 
     def _sortedKeys(self, key2idx):
-        keyL = [(idx, key) for key, idx in iteritems(key2idx)]
+        keyL = [(idx, key) for key, idx in key2idx.items()]
         keyL.sort()
         return zip(*keyL)[1]
 
@@ -115,7 +114,7 @@ class TableMap:
         # build the columns
 
         colL = [None]*(len(self.col2idx))
-        for colKey, colIdx in iteritems(self.col2idx):
+        for colKey, colIdx in self.col2idx.items():
             fmt = self.format.get(colKey, '%s')
 
             col = []
@@ -135,7 +134,7 @@ class TableMap:
 
         if rowHeader:
             rowHead = ['']*(1 + len(self.row2idx))
-            for rowKey, rowIdx in iteritems(self.row2idx):
+            for rowKey, rowIdx in self.row2idx.items():
                 caption = self.rowCaption(rowKey, "%s" % rowKey)
                 rowHead[1 + rowIdx] = caption
             colL.insert(0, rowHead)

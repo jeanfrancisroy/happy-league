@@ -384,4 +384,4 @@ class Callback:
             matchL = self.config.getScheduleFromMat(annealable.bestSch)
 
             optState = OptState(finished, vBest, v2p, self.startTime, speed)
-            write_pickle((self.config, matchL, optState), self.pklPath, lock_block=True)
+            write_pickle((self.config, matchL, optState), self.pklPath)

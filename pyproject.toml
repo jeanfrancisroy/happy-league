@@ -6,12 +6,14 @@ authors = ["Alexandre Lacoste, Jean-Francis Roy <jeanfrancisroy@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.10,<3.14"
 cherrypy = "18.10.0"
 numpy = "1.26.4"
 xlrd = "2.0.2"
 pywebview = {version = "6.0", extras = ["qt"]}
-proxy_tools = "0.1.0"
+
+# To avoid getting python.net 2 which is incompatible with Python 3.10+
+pythonnet = "3.0.5"
 
 [tool.poetry.group.dev.dependencies]
 briefcase = "^0.3.24"
@@ -30,14 +32,14 @@ formal_name = "Happy League"
 description = "Ultimate Frisbee schedule generator."
 sources = ["src/happy_league"]
 entry_point = "happy_league:main"
-license = "BSD"
+license.file = "LICENSE"
 
 requires = [
     "cherrypy==18.10.0",
     "numpy==1.26.4",
     "xlrd==2.0.2",
     "pywebview==6.0",
-    "proxy-tools==0.1.0"
+    "pythonnet==3.0.5",
 ]
 
 #[tool.briefcase.app.happy-league.macOS]
