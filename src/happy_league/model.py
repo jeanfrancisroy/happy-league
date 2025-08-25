@@ -9,9 +9,9 @@ Every module depends on this one. Therefore, it must be as stable as possible.
 Most objects speaks for themselves
 
 """
-from __future__ import unicode_literals
 import numpy as np
-from util import unparseTime
+
+from happy_league.util import unparseTime
 
 
 def teamSortKey(x):

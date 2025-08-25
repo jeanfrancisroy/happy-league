@@ -4,15 +4,14 @@ Created on 2011-11-02
 
 @author: alexandre
 '''
-from __future__ import unicode_literals
 from future.utils import iteritems
-from table import TableMap
-from model import teamSortKey
-from util import formatDelay, unparseTime
 import numpy as np
 from copy import deepcopy
 
-from cherryPyServer.scheduleAnalysis import AnalysisResult
+from happy_league.table import TableMap
+from happy_league.model import teamSortKey
+from happy_league.util import formatDelay, unparseTime
+from happy_league.cherryPyServer.scheduleAnalysis import AnalysisResult
 
 
 # Python 3 compatibility

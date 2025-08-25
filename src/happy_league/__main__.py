@@ -5,7 +5,7 @@ import threading
 import cherrypy
 import webview
 
-from cherryPyServer.server import workFolder, ScheduleServer
+from happy_league.cherryPyServer.server import workFolder, ScheduleServer
 
 def find_free_port():
     """Find an available TCP port."""
@@ -44,9 +44,7 @@ def start_cherrypy(port):
                         })
 
 
-
-
-if __name__ == "__main__":
+def main():
     port = find_free_port()
 
     # Run CherryPy in a background thread
@@ -55,5 +53,8 @@ if __name__ == "__main__":
 
     # Start pywebview pointing to our CherryPy server
     webview.create_window("Happy League", f"http://127.0.0.1:{port}")
-    webview.start()
+    webview.start(gui="qt")
 
+
+if __name__ == "__main__":
+    main()

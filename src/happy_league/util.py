@@ -3,7 +3,6 @@ Created on 2011-11-03
 
 @author: alexandre
 '''
-from __future__ import division
 from os import path
 import pickle
 import fcntl

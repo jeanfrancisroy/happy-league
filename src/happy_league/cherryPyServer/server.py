@@ -3,15 +3,14 @@ Created on 2011-11-03
 
 @author: alexandre
 """
-from __future__ import unicode_literals
 import cherrypy
 from os import path
 import subprocess as sp
 import os
 import tempfile
 
-from cherryPyServer import htmlView
-from util import read_pickle
+from happy_league.cherryPyServer import htmlView
+from happy_league.util import read_pickle
 
 workFolder = tempfile.mkdtemp(prefix='happy-league-')
 makeSchedulePath = path.join(path.dirname(__file__), '..', "makeSchedule.py")

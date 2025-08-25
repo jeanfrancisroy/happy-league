@@ -16,7 +16,7 @@ from . import anneal
 from copy import deepcopy
 import time as t
 from os import path
-from util import write_pickle, formatDelay, formatTime
+from happy_league.util import write_pickle, formatDelay, formatTime
 ewLen = np.frompyfunc(len, 1, 1)  # an element-wise version of len
 
 t1 = t.time()

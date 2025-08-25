@@ -11,11 +11,13 @@ as an argument
 
 """
 import xlsConfig
-from annealOpt.schAnneal import SchAnneal
 from os import path
 import sys
 
 import numpy as np
+
+from happy_league.annealOpt.schAnneal import SchAnneal
+
 np.seterr(over='ignore')
 
 

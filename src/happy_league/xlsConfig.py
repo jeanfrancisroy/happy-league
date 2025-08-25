@@ -9,8 +9,8 @@ from future.utils import iteritems
 import xlrd
 import datetime
 import itertools
-from model import Field, Restriction, Date, ObjSrv, Team, Division, League, Config, DivisionHalf
-from util import parseTime
+from happy_league.model import Field, Restriction, Date, ObjSrv, Team, Division, League, Config, DivisionHalf
+from happy_league.util import parseTime
 
 # Python 3 compatibility
 import sys
