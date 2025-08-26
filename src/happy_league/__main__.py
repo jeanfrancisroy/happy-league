@@ -1,11 +1,14 @@
 import os
 import socket
+import tempfile
 import threading
+import multiprocessing as mp
 
 import cherrypy
 import webview
 
-from happy_league.cherryPyServer.server import workFolder, ScheduleServer
+from happy_league.server.server import ScheduleServer
+
 
 def find_free_port():
     """Find an available TCP port."""
@@ -17,13 +20,20 @@ def find_free_port():
 
 
 def start_cherrypy(port):
+    workFolder = tempfile.mkdtemp(prefix='happy-league-')
+
+    try:
+        os.makedirs(workFolder)
+    except OSError:
+        pass
+
     cherrypy.config.update({
         'server.socket_host': '127.0.0.1',
         'server.socket_port': port,
         'engine.autoreload.on': False,   # disable dev reloader
     })
 
-    static_dir = os.path.dirname(os.path.abspath(__file__)) + '/cherryPyServer' + os.path.sep
+    static_dir = os.path.dirname(os.path.abspath(__file__)) + '/server' + os.path.sep
     cherrypy.quickstart(ScheduleServer(workFolder),
                         config={
                             '/': {
@@ -57,4 +67,5 @@ def main():
 
 
 if __name__ == "__main__":
+    mp.freeze_support()
     main()

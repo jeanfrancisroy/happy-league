@@ -6,9 +6,9 @@ authors = ["Alexandre Lacoste, Jean-Francis Roy <jeanfrancisroy@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.14"
+python = ">=3.13,<3.14"
 cherrypy = "18.10.0"
-numpy = "1.26.4"
+numpy = "2.3.2"
 xlrd = "2.0.2"
 pywebview = {version = "6.0", extras = ["qt"]}
 
@@ -16,41 +16,9 @@ pywebview = {version = "6.0", extras = ["qt"]}
 pythonnet = "3.0.5"
 
 [tool.poetry.group.dev.dependencies]
-briefcase = "^0.3.24"
+pyinstaller = "^6.15.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.briefcase]
-project_name = "happy-league"
-bundle = "org.ultimatequebec"
-version = "0.1.0"
-
-[tool.briefcase.app.happy-league]
-formal_name = "Happy League"
-description = "Ultimate Frisbee schedule generator."
-sources = ["src/happy_league"]
-entry_point = "happy_league:main"
-license.file = "LICENSE"
-
-requires = [
-    "cherrypy==18.10.0",
-    "numpy==1.26.4",
-    "xlrd==2.0.2",
-    "pywebview==6.0",
-    "pythonnet==3.0.5",
-]
-
-#[tool.briefcase.app.happy-league.macOS]
-#universal_build = true
-#requires = [
-#    "toga-cocoa~=0.5.0",
-#    "std-nslog~=1.0.3",
-#]
-#
-#[tool.briefcase.app.happy-league.windows]
-#requires = [
-#    "toga-winforms~=0.5.0",
-#
 

@@ -17,8 +17,7 @@ Suite au départ d'Alexandre en Californie, Jean-Francis Roy a repris son projet
 plus conviviale (pour l'époque), et a converti le code de Python 2 vers Python 3. Il n'a cependant pas participé
 significativement à la conception. 
 
-Le générateur a été hébergé pendant plusieurs années sur une instance EC2 dans amazon AWS, mais a maintenant un petit
-installateur pour en faire une application locale.
+Le générateur a été hébergé pendant plusieurs années sur une instance EC2 dans amazon AWS, mais a maintenant été convertie en application locale.
 
 
 ## Implémentation actuelle
@@ -81,12 +80,12 @@ poetry run briefcase dev
 ```
 
 ## Packaging en application locale
-Le générateur peut être empaqueté en une application locale (Windows, MacOS, etc.) en utilisant Briefcase. 
+Le générateur peut être empaqueté en une application locale (Windows, MacOS, etc.) en utilisant _PyInstaller_. 
 
 ```
 cd /path/to/happy-league
 poetry install
-poetry run briefcase create windows
-poetry run briefcase build windows
-poetry run briefcase package windows
+poetry run pyinstaller happy_league.spec
 ```
+
+L'exécutable résultant sera créé dans le dossier `dist/`.
