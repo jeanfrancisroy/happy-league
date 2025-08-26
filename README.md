@@ -76,7 +76,7 @@ L'exécution du générateur d'horaires requiert un environnement de programmati
 ```
 cd /path/to/happy-league
 poetry install
-poetry run briefcase dev
+poetry run src/happy_league
 ```
 
 ## Packaging en application locale
