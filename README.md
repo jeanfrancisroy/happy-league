@@ -82,10 +82,18 @@ poetry run src/happy_league
 ## Packaging en application locale
 Le générateur peut être empaqueté en une application locale (Windows, MacOS, etc.) en utilisant _PyInstaller_. 
 
+Pour créer une application Windows:
 ```
 cd /path/to/happy-league
 poetry install
 poetry run pyinstaller happy_league.spec
+```
+
+Pour créer une application Mac OS:
+```
+cd /path/to/happy-league
+poetry install
+poetry run pyinstaller happy_league_macos.spec
 ```
 
 L'exécutable résultant sera créé dans le dossier `dist/`.
