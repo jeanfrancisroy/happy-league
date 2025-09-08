@@ -32,9 +32,18 @@ def makeScheduleLeague(workFolder, maxTime):
             sys.stdout = stdout
             sys.stderr = stderr
 
-            config = xlsConfig.ConfigLoader(path.join(workFolder, 'xlsConfig.xls')).getConfig()
-            config.workFolder = workFolder
-            _matchL = SchAnneal(maxTime=maxTime,verbosity=1).opt(config)
+            try:
+                config = xlsConfig.ConfigLoader(path.join(workFolder, 'xlsConfig.xls')).getConfig()
+                config.workFolder = workFolder
+            except Exception as e:
+                sys.stderr.write("Exception during config loading: {}".format(e))
+                raise e
+
+            try:
+                _matchL = SchAnneal(maxTime=maxTime,verbosity=1).opt(config)
+            except Exception as e:
+                sys.stderr.write("Exception during optimization: {}".format(e))
+                raise e
 
     sys.stdout = orig_stdout
     sys.stderr = orig_stderr

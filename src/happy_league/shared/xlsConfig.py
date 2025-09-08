@@ -5,17 +5,14 @@ Created on Jan 11, 2011
 @author: alex
 
 """
-import xlrd
 import datetime
 import itertools
+import sys
+
+import xlrd
+
 from happy_league.shared.model import Field, Restriction, Date, ObjSrv, Team, Division, League, Config, DivisionHalf
 from happy_league.shared.util import parseTime
-
-# Python 3 compatibility
-import sys
-if sys.version_info > (3, 0):
-    unicode = str
-
 
 TEAM = 'equipe'
 STADIUM = 'stade'
@@ -42,13 +39,15 @@ signD = {'inclusion': True, 'exclusion': False}
 
 
 def isGroupName(name):
-    if not isinstance(name, (str, unicode)): return False
+    if not isinstance(name, str): return False
     name = name.strip()
     if len(name) <= 2: return False
     return name[0] == '<' and  name[-1] == '>'
 
 
 def identity(val): return val
+
+def to_string(val): return str(val)
 
 
 class ConfigException(Exception):
@@ -61,8 +60,8 @@ class ConfigLoader:
         self.parserD = {
             DATE: self.parseDate,
             TIME: parseTime,
-            FNAME: identity,
-            STADIUM: identity,
+            FNAME: to_string,
+            STADIUM: to_string,
             'action': identity,
             TIME_MAX: parseTime,
             TIME_MIN: parseTime,
@@ -71,15 +70,53 @@ class ConfigLoader:
 
         self.dateSrv = ObjSrv()
 
-        self.wb = xlrd.open_workbook(fileName)
+        try:
+            self.wb = xlrd.open_workbook(fileName)
+        except Exception as e:
+            sys.stderr.write("Error opening Excel file: %s\n" % e)
+            raise
 
-        self.loadGeneralConf()
-        self.parseLeague()
-        self.getGroups()
-        self.getFieldL()
-        self.getRestriction()
-        self.getTeamGrpD()
-        self.parseUniformity()
+        try:
+            self.loadGeneralConf()
+        except Exception as e:
+            sys.stderr.write("Error in loading general configuration: %s\n" % e)
+            raise
+
+        try:
+            self.parseLeague()
+        except Exception as e:
+            sys.stderr.write("Error in loading league details: %s\n" % e)
+            raise
+
+        try:
+            self.getGroups()
+        except Exception as e:
+            sys.stderr.write("Error in loading groups: %s\n" % e)
+            raise
+
+        try:
+            self.getFieldL()
+        except Exception as e:
+            sys.stderr.write("Error in loading fields: %s\n" % e)
+            raise
+
+        try:
+            self.getRestriction()
+        except Exception as e:
+            sys.stderr.write("Error in loading restrictions: %s\n" % e)
+            raise
+
+        try:
+            self.getTeamGrpD()
+        except Exception as e:
+            sys.stderr.write("Error in loading team groups: %s\n" % e)
+            raise
+
+        try:
+            self.parseUniformity()
+        except Exception as e:
+            sys.stderr.write("Error in loading uniformity configuration: %s\n" % e)
+            raise
 
     def parseDate(self, date):
         if isinstance(date, datetime.date):
@@ -159,7 +196,7 @@ class ConfigLoader:
 
     def expand( self, field, type_ ):
         if field is None: return None
-        if not isinstance(field, (str, unicode)):
+        if not isinstance(field, str):
             valL = [field]
         else:
             if isGroupName( field ) and field in self.groupD:

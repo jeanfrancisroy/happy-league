@@ -20,10 +20,10 @@ def find_free_port():
 
 
 def start_cherrypy(port):
-    workFolder = tempfile.mkdtemp(prefix='happy-league-')
+    work_folder = tempfile.mkdtemp(prefix='happy-league-')
 
     try:
-        os.makedirs(workFolder)
+        os.makedirs(work_folder)
     except OSError:
         pass
 
@@ -34,7 +34,7 @@ def start_cherrypy(port):
     })
 
     static_dir = os.path.dirname(os.path.abspath(__file__)) + '/server' + os.path.sep
-    cherrypy.quickstart(ScheduleServer(workFolder),
+    cherrypy.quickstart(ScheduleServer(work_folder),
                         config={
                             '/': {
                                 'tools.staticdir.root': static_dir,
@@ -62,7 +62,7 @@ def main():
     t.start()
 
     # Start pywebview pointing to our CherryPy server
-    webview.create_window("Happy League", f"http://127.0.0.1:{port}")
+    webview.create_window("Happy League", f"http://127.0.0.1:{port}", text_select=True)
     webview.start(gui="qt")
 
 

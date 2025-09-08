@@ -13,12 +13,6 @@ from happy_league.shared.util import formatDelay, unparseTime
 from happy_league.server.scheduleAnalysis import AnalysisResult
 
 
-# Python 3 compatibility
-import sys
-if sys.version_info > (3, 0):
-    unicode = str
-
-
 def sortKey(x):
     return x.key
 
@@ -207,7 +201,7 @@ class HtmlAnalysis(AnalysisResult):
                 restrL = self.conflictMatchD[match]
                 penL = ["%.1f" % restr.value for restr in restrL]
                 vs = '%s<font color="gray" size="-1" > vs </font>%s' % (match.team1.name, match.team2.name)
-                strMat.append([vs, unicode(match.field), ' + '.join(penL)])
+                strMat.append([vs, str(match.field), ' + '.join(penL)])
             self.objL.append(HtmlTable(strMat, cellpadding="10", cellspacing="0", **{'class': 'table table-bordered'}))
 
         # Uniformity
@@ -389,7 +383,7 @@ class HtmlTag:
         attrL = ['%s="%s"' % (key, val) for key, val in self.attrD.items()]
         strL = ["<%s %s>" % (self.tag, ' '.join(attrL))]
         for obj in self.objL:
-            if isinstance(obj, (str, unicode)):
+            if isinstance(obj, str):
                 strL.append(obj)
             else:
                 strL.append(obj.__html__())

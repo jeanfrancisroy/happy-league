@@ -3,10 +3,9 @@ Created on 2011-11-03
 
 @author: alexandre
 """
+import sys
 import os
 from os import path
-import platform
-import sys
 import multiprocessing as mp
 
 import cherrypy
@@ -123,6 +122,8 @@ class ScheduleServer(object):
         strL.append('<h2>%s</h2>' % name)
 
         file_path = os.path.join(self.workFolder, name)
+        sys.stdout.flush()
+        sys.stderr.flush()
         if os.path.exists(file_path):
             with open(file_path) as f:
                 stdout = f.read()
